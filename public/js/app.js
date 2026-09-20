@@ -108,6 +108,18 @@
     showAuth();
   });
 
+  function renderUser(user) {
+    const email = user?.email || "";
+    const name =
+      user?.user_metadata?.name ||
+      user?.user_metadata?.full_name ||
+      email.split("@")[0] ||
+      "User";
+    document.getElementById("userName").textContent = name;
+    document.getElementById("userEmail").textContent = email;
+    document.getElementById("userAvatar").textContent = name.charAt(0).toUpperCase();
+  }
+
   async function handleSession(session) {
     if (!session) {
       showAuth();
@@ -116,6 +128,7 @@
     accessToken = session.access_token;
     currentUser = session.user;
     localStorage.setItem("sb_access_token", accessToken);
+    renderUser(currentUser);
     showApp();
     load();
   }
