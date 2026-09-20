@@ -36,12 +36,14 @@
   let currentUser = null;
 
   // ---------- Auth UI ----------
+    // ---------- Auth UI ----------
   const authScreen = document.getElementById("authScreen");
   const appRoot = document.getElementById("appRoot");
   const authForm = document.getElementById("authForm");
   const authEmail = document.getElementById("authEmail");
   const authPassword = document.getElementById("authPassword");
   const authError = document.getElementById("authError");
+  const authInfo = document.getElementById("authInfo");
   const authSubmit = document.getElementById("authSubmit");
   let authMode = "login"; // "login" | "signup"
 
@@ -51,34 +53,41 @@
       document.querySelectorAll(".auth-tab").forEach((b) => b.classList.toggle("active", b === btn));
       authSubmit.textContent = authMode === "login" ? "Log in" : "Create account";
       authError.hidden = true;
+      authInfo.hidden = true;
     });
   });
 
   authForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     authError.hidden = true;
+    authInfo.hidden = true;
     authSubmit.disabled = true;
     authSubmit.textContent = "Please wait…";
 
     const email = authEmail.value.trim();
     const password = authPassword.value;
+    const wasSignup = authMode === "signup";
 
     try {
       let result;
-      if (authMode === "login") {
+      if (!wasSignup) {
         result = await supabase.auth.signInWithPassword({ email, password });
       } else {
-        result = await supabase.auth.signUp({ email, password });
+        result = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: window.location.origin },
+        });
       }
 
       if (result.error) throw result.error;
 
-      // After signup, Supabase may require email confirmation
-      if (authMode === "signup" && !result.data.session) {
-        authError.textContent = "Check your email to confirm your account, then log in.";
-        authError.hidden = false;
-        authMode = "login";
+      if (wasSignup && !result.data.session) {
+        // Switch to the login tab FIRST (the tab click clears messages), then show the notice
         document.querySelector('.auth-tab[data-mode="login"]').click();
+        authInfo.textContent = `We sent a confirmation link to ${email}. Open it, then come back here and log in.`;
+        authInfo.hidden = false;
+        authPassword.value = "";
       } else {
         await handleSession(result.data.session);
       }
