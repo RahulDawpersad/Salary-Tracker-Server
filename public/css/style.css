@@ -1219,3 +1219,12 @@ dialog form {
 #appRoot.is-hidden {
   display: none !important;
 }
+
+.auth-info {
+  color: var(--good);
+  background: var(--good-bg);
+  border-radius: 8px;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.875rem;
+  margin: 0.75rem 0 0;
+}
