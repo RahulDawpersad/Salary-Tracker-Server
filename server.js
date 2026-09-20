@@ -253,6 +253,14 @@ app.get("/api/export.csv", requireAuth, async (req, res) => {
     res.send(header + rows);
 });
 
+// Delete item
+app.delete("/api/items/:id", requireAuth, async (req, res) => {
+    const { id } = req.params;
+    const { error } = await req.sb.from("items").delete().eq("id", id);
+    if (error) return res.status(500).json({ error: error.message });
+    res.json({ ok: true });
+});
+
 // Health check
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
