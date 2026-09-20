@@ -1275,3 +1275,45 @@ dialog form {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Password show/hide */
+.pw-wrap {
+  position: relative;
+}
+
+.pw-wrap input {
+  padding-right: 44px;
+}
+
+.pw-toggle {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.pw-toggle:hover {
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.pw-toggle .eye-off {
+  display: none;
+}
+
+.pw-toggle.showing .eye-on {
+  display: none;
+}
+
+.pw-toggle.showing .eye-off {
+  display: block;
+}
