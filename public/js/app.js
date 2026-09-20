@@ -100,6 +100,17 @@
     }
   });
 
+    // ---------- Show / hide password ----------
+  const pwToggle = document.getElementById("pwToggle");
+  pwToggle.addEventListener("click", () => {
+    const show = authPassword.type === "password";
+    authPassword.type = show ? "text" : "password";
+    pwToggle.classList.toggle("showing", show);
+    pwToggle.setAttribute("aria-pressed", String(show));
+    pwToggle.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    authPassword.focus();
+  });
+
   document.getElementById("logoutBtn")?.addEventListener("click", async () => {
     await supabase.auth.signOut();
     accessToken = null;
