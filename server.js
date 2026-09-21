@@ -152,8 +152,23 @@ app.patch("/api/items/:id", requireAuth, async (req, res) => {
 
 // Delete item
 app.delete("/api/items/:id", requireAuth, async (req, res) => {
-    const { error } = await req.sb.from("items").delete().eq("id", id);
+    const { id } = req.params;
+
+    const { data, error } = await req.sb
+        .from("items")
+        .delete()
+        .eq("id", id)
+        .select();
+
     if (error) return res.status(500).json({ error: error.message });
+
+    // RLS (or a wrong id) can make Supabase delete 0 rows without an error
+    if (!data || data.length === 0) {
+        return res
+            .status(404)
+            .json({ error: "Account not found, or you're not allowed to delete it." });
+    }
+
     res.json({ ok: true });
 });
 
@@ -251,14 +266,6 @@ app.get("/api/export.csv", requireAuth, async (req, res) => {
     res.setHeader("Content-Type", "text/csv");
     res.setHeader("Content-Disposition", "attachment; filename=salary-export.csv");
     res.send(header + rows);
-});
-
-// Delete item
-app.delete("/api/items/:id", requireAuth, async (req, res) => {
-    const { id } = req.params;
-    const { error } = await req.sb.from("items").delete().eq("id", id);
-    if (error) return res.status(500).json({ error: error.message });
-    res.json({ ok: true });
 });
 
 // Health check
